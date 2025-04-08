@@ -43,8 +43,6 @@ services:
   spring_app:
     build: .
     container_name: "${COMPOSE_PROJECT_NAME}-spring_app"
-    volumes:
-      - .:/app
     ports:
       - "${SPRING_HOST_PORT}:8080"
     depends_on:
