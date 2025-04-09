@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: TaskManagement
+    secret: b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+    show-sql: true
+    hibernate.ddl-auto: update
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:mysql://localhost:3306/tms}
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+server:
+  port: ${SERVER_PORT:8080}
