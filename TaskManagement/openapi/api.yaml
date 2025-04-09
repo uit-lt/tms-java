@@ -65,7 +65,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/AuthRequestDTO"
+              $ref: "#/components/schemas/AuthLoginRequestDTO"
       responses:
         "200":
           description: Successful login
@@ -402,12 +402,29 @@ components:
         username:
           type: string
           example: "user123"
+          x-field-extra-annotation: "@NotEmpty(message = \"Username cannot be null or empty\")"
         password:
           type: string
           example: "password123"
+          x-field-extra-annotation: "@NotEmpty(message = \"Password cannot be null or empty\")"
         email:
           type: string
           example: "user@gmail.com"
+          x-field-extra-annotation: "@NotEmpty(message = \"Email cannot be null or empty\")"
+    AuthLoginRequestDTO:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: "user123"
+          x-field-extra-annotation: "@NotEmpty(message = \"Username cannot be null or empty\")"
+        password:
+          type: string
+          example: "password123"
+          x-field-extra-annotation: "@NotEmpty(message = \"Password cannot be null or empty\")"
     AuthResponseDTO:
       type: object
       properties:
@@ -466,6 +483,7 @@ components:
       properties:
         title:
           type: string
+          x-field-extra-annotation: "@NotEmpty(message = \"Title cannot be null or empty\")"
         description:
           type: string
         status:
@@ -481,9 +499,11 @@ components:
         assigneeId:
           type: integer
           format: int64
+          x-field-extra-annotation: "@NotNull(message = \"AssigneeId cannot be null or empty\")"
         projectId:
           type: integer
           format: int64
+          x-field-extra-annotation: "@NotNull(message = \"ProjectId cannot be null or empty\")"
       required:
         - title
         - status

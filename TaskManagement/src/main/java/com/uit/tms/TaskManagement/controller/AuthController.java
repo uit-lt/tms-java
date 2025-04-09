@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.uit.tms.TaskManagement.api.AuthApi;
+import com.uit.tms.TaskManagement.model.AuthLoginRequestDTO;
 import com.uit.tms.TaskManagement.model.AuthRequestDTO;
 import com.uit.tms.TaskManagement.model.AuthResponseDTO;
 import com.uit.tms.TaskManagement.service.impl.AuthServiceImpl;
@@ -19,7 +20,7 @@ public class AuthController implements AuthApi {
     private final AuthServiceImpl authService;
 
 	@Override
-	public ResponseEntity<AuthResponseDTO> login(@Valid AuthRequestDTO authRequestDTO) throws Exception {
+	public ResponseEntity<AuthResponseDTO> login(@Valid AuthLoginRequestDTO authRequestDTO) throws Exception {
 		return ResponseEntity.ok(authService.authenticate(authRequestDTO));
 	}
 
