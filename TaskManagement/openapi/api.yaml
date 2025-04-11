@@ -1,0 +1,965 @@
+openapi: 3.0.1
+info:
+  title: TMS API
+  description: This is the OpenAPI specification for the TMS API.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+tags:
+  - name: Task
+    description: Operations related to tasks
+  - name: Auth
+    description: Operations related to authentication
+  - name: User
+    description: Operations related to users
+  - name: Role
+    description: Operations related to roles
+
+paths:
+  /auth/register:
+    post:
+      summary: POST endpoint for user registration
+      tags:
+        - Auth
+      operationId: register
+      requestBody:
+        required: true
+        description: User object that needs to be registered
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegisterRequestDTO"
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "409":
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "User already exists"
+                  code: 409
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Internal server error"
+                  code: 500
+  /auth/login:
+    post:
+      summary: POST endpoint for user login
+      tags:
+        - Auth
+      operationId: login
+      requestBody:
+        required: true
+        description: User credentials for login
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserLoginRequestDTO"
+      responses:
+        "200":
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponseDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Unauthorized access"
+                  code: 401
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Resource not found"
+                  code: 404
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Internal server error"
+                  code: 500
+  /users:
+    get:
+      summary: GET endpoint for getting all users
+      operationId: getUsers
+      tags:
+        - User
+      responses:
+        "200":
+          description: All users retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserResponseDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+  /users/{userId}:
+    get:
+      summary: GET endpoint for getting a user by ID
+      operationId: getUserById
+      tags:
+        - User
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to retrieve
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponseDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+  
+    delete:
+      summary: DELETE endpoint for deleting a user
+      tags:
+        - User
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: ID of the user to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: User deleted successfully
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+  /users/{userId}/roles:
+    post:
+      summary: Assign a role to a user
+      tags:
+        - User
+      operationId: assignRoleToUser
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+          description: ID of the user to assign the role to
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+              properties:
+                roleName:
+                  type: string
+                  description: Name of the role to assign
+      responses:
+        "200":
+          description: Role assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserResponseDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+  /roles:
+    get:
+      summary: GET endpoint for getting all roles
+      operationId: getRoles
+      tags:
+        - Role
+      responses:
+        "200":
+          description: All roles retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RoleResponseDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+    post:
+      summary: POST endpoint for creating a new role
+      tags:
+        - Role
+      operationId: createRole
+      requestBody:
+        required: true
+        description: Role object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoleRequestDTO"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleResponseDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+  /roles/{roleId}:
+    get:
+      summary: GET endpoint for getting a role by ID
+      operationId: getRoleById
+      tags:
+        - Role
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          description: ID of the role to retrieve
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Role retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoleResponseDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+    delete:
+      summary: DELETE endpoint for deleting a role
+      tags:
+        - Role
+      operationId: deleteRole
+      parameters:
+        - name: roleId
+          in: path
+          required: true
+          description: ID of the role to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Role deleted successfully
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: Role not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+  /tasks:
+    get:
+      summary: GET  endpoint for get all tasks
+      operationId: getTasks
+      tags:
+        - Task
+      responses:
+        "200":
+          description: All tasks retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TaskResponseDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Unauthorized access"
+                  code: 401
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Access denied"
+                  code: 403
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Resource not found"
+                  code: 404
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Internal server error"
+                  code: 500
+    post:
+      summary: POST endpoint for creating a new task
+      tags:
+        - Task
+      operationId: createTask
+      requestBody:
+        required: true
+        description: Task object that needs to be added
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskRequestDTO"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponseDTO"
+                description: The created task object
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Unauthorized access"
+                  code: 401
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Access denied"
+                  code: 403
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Resource not found"
+                  code: 404
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+                example:
+                  message: "Internal server error"
+                  code: 500
+  /tasks/{taskId}:
+    get:
+      summary: GET endpoint for getting a task by ID
+      tags:
+        - Task
+      operationId: getTaskById
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: ID of the task to retrieve
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Task retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponseDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+    put:
+      summary: PUT endpoint for updating an existing task
+      tags:
+        - Task
+      operationId: updateTask
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: ID of the task to update
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        required: true
+        description: Task object with updated details
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TaskRequestDTO"
+      responses:
+        "200":
+          description: Task updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TaskResponseDTO"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+
+    delete:
+      summary: DELETE endpoint for deleting a task
+      tags:
+        - Task
+      operationId: deleteTask
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: ID of the task to delete
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "204":
+          description: Task deleted successfully
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+components:
+  schemas:
+    ErrorResponseDTO:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Error"
+        code:
+          type: integer
+          example: 500
+    UserUpdateRequestDTO:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
+    UserRegisterRequestDTO:
+      type: object
+      required:
+        - username
+        - password
+        - email
+      properties:
+        username:
+          type: string
+          example: "user123"
+          x-field-extra-annotation: "@NotEmpty(message = \"Username cannot be null or empty\")"
+        password:
+          type: string
+          example: "password123"
+          x-field-extra-annotation: "@NotEmpty(message = \"Password cannot be null or empty\")"
+        email:
+          type: string
+          example: "user@gmail.com"
+          x-field-extra-annotation: "@NotEmpty(message = \"Email cannot be null or empty\")"
+    UserLoginRequestDTO:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          example: "user123"
+          x-field-extra-annotation: "@NotEmpty(message = \"Username cannot be null or empty\")"
+        password:
+          type: string
+          example: "password123"
+          x-field-extra-annotation: "@NotEmpty(message = \"Password cannot be null or empty\")"
+    UserResponseDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "user123"
+        email:
+          type: string
+          example: user@gmail.com"
+        id:
+          type: integer
+          format: int64
+        roles:
+          type: array
+          items:
+            $ref: "#/components/schemas/RoleResponseDTO"
+    AuthResponseDTO:
+      type: object
+      properties:
+        username:
+          type: string
+          example: "user123"
+        email: 
+          type: string
+          example: user@gmail.com"
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    RoleRequestDTO:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Admin"
+          x-field-extra-annotation: "@NotEmpty(message = \"Role name cannot be null or empty\")"
+    RoleResponseDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+          example: "Admin"
+    TaskResponseDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+        estTime:
+          type: number
+          format: float
+        dueDate:
+          type: string
+          format: date-time
+        priority:
+          type: string
+        assigneeId:
+          type: integer
+          format: int64
+        projectId:
+          type: integer
+          format: int64
+        createdBy:
+          type: object
+          properties:
+            email:
+              type: string
+            username:
+              type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - title
+        - status
+        - estTime
+        - dueDate
+        - priority
+        - assigneeId
+        - projectId
+        - createdBy
+        - createdAt
+        - updatedAt
+
+    TaskRequestDTO:
+      type: object
+      properties:
+        title:
+          type: string
+          x-field-extra-annotation: "@NotEmpty(message = \"Title cannot be null or empty\")"
+        description:
+          type: string
+        status:
+          type: string
+        estTime:
+          type: number
+          format: float
+        dueDate:
+          type: string
+          format: date-time
+        priority:
+          type: string
+        assigneeId:
+          type: integer
+          format: int64
+          x-field-extra-annotation: "@NotNull(message = \"AssigneeId cannot be null or empty\")"
+        projectId:
+          type: integer
+          format: int64
+          x-field-extra-annotation: "@NotNull(message = \"ProjectId cannot be null or empty\")"
+      required:
+        - title
+        - status
+        - estTime
+        - dueDate
+        - priority
+        - assigneeId
+        - projectId
