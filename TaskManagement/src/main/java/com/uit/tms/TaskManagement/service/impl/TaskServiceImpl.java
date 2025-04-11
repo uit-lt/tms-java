@@ -3,6 +3,7 @@ package com.uit.tms.TaskManagement.service.impl;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 
 import com.uit.tms.TaskManagement.entity.TaskEntity;
 import com.uit.tms.TaskManagement.mapper.TaskMapper;
@@ -16,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
+@Validated
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;

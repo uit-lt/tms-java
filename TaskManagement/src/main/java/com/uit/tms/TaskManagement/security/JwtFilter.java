@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.uit.tms.TaskManagement.service.impl.CustomUserDetailsService;
+import com.uit.tms.TaskManagement.service.impl.UserDetailsServiceImpl;
 import com.uit.tms.TaskManagement.util.JwtUtil;
 
 import jakarta.servlet.FilterChain;
@@ -23,7 +23,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
 
-    private final CustomUserDetailsService userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,

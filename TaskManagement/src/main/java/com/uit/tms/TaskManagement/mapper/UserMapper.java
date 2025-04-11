@@ -6,8 +6,9 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 
 import com.uit.tms.TaskManagement.entity.UserEntity;
-import com.uit.tms.TaskManagement.model.AuthRequestDTO;
 import com.uit.tms.TaskManagement.model.AuthResponseDTO;
+import com.uit.tms.TaskManagement.model.UserRegisterRequestDTO;
+import com.uit.tms.TaskManagement.model.UserResponseDTO;
 
 @Mapper(
 	    componentModel = MappingConstants.ComponentModel.SPRING,
@@ -15,7 +16,8 @@ import com.uit.tms.TaskManagement.model.AuthResponseDTO;
 	    nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE
 	)
 public interface UserMapper {
-	AuthResponseDTO toDto(UserEntity entity);
-    UserEntity toEntity(AuthRequestDTO dto);
-    void updateEntityFromDto(AuthRequestDTO dto, @MappingTarget UserEntity task);
+	AuthResponseDTO toAuthDto(UserEntity entity);
+	UserResponseDTO toDto(UserEntity entity);
+    UserEntity toEntity(UserRegisterRequestDTO dto);
+    void updateEntityFromDto(UserRegisterRequestDTO dto, @MappingTarget UserEntity task);
 }
