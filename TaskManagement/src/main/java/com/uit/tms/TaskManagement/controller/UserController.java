@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.uit.tms.TaskManagement.api.UserApi;
 import com.uit.tms.TaskManagement.model.AssignRoleToUserRequest;
 import com.uit.tms.TaskManagement.model.UserResponseDTO;
+import com.uit.tms.TaskManagement.model.UserUpdateRequestDTO;
 import com.uit.tms.TaskManagement.service.UserService;
 
 import jakarta.validation.Valid;
@@ -44,5 +45,6 @@ public class UserController implements UserApi {
 		service.deleteUser(userId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
+
 
 }

@@ -65,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
 		UserEntity user = new UserEntity();
 		mapper.updateEntityFromRegisterDto(request, user);
 		RoleEntity userRole = roleRepository.findByName(ROLE_USER).orElseGet(() -> {
-			return roleRepository.save(new RoleEntity(null, ROLE_USER, null));
+			return roleRepository.save(RoleEntity.builder().name(ROLE_USER).build());
 		});
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
 		user.getRoles().add(userRole);

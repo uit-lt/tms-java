@@ -47,14 +47,13 @@ public class UserEntity {
 	private boolean twoFactorEnabled;
 	
 	@CreatedDate
-    @Column(updatable = false)
 	private LocalDateTime createdAt;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(
 	  name = "user_roles",
-	  joinColumns = @JoinColumn(name = "user_id"),
-	  inverseJoinColumns = @JoinColumn(name = "role_id")
+	  joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+	  inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
 	)
 	private Set<RoleEntity> roles;
 	
