@@ -206,33 +206,23 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponseDTO"
-    put:
-      summary: PUT endpoint for updating an existing user
+  
+    delete:
+      summary: DELETE endpoint for deleting a user
       tags:
         - User
-      operationId: updateUser
+      operationId: deleteUser
       parameters:
         - name: userId
           in: path
           required: true
-          description: ID of the user to update
+          description: ID of the user to delete
           schema:
             type: integer
             format: int64
-      requestBody:
-        required: true
-        description: User object with updated details
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UserRegisterRequestDTO"
       responses:
-        "200":
-          description: User updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/UserResponseDTO"
+        "204":
+          description: User deleted successfully
         "400":
           description: Bad request
           content:
@@ -247,6 +237,18 @@ paths:
                 $ref: "#/components/schemas/ErrorResponseDTO"
         "403":
           description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "404":
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponseDTO"
+        "500":
+          description: Internal server error
           content:
             application/json:
               schema:
@@ -790,6 +792,15 @@ components:
         code:
           type: integer
           example: 500
+    UserUpdateRequestDTO:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        email:
+          type: string
     UserRegisterRequestDTO:
       type: object
       required:

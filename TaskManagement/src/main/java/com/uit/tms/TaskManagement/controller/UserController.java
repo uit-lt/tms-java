@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.uit.tms.TaskManagement.api.UserApi;
 import com.uit.tms.TaskManagement.model.AssignRoleToUserRequest;
-import com.uit.tms.TaskManagement.model.UserRegisterRequestDTO;
 import com.uit.tms.TaskManagement.model.UserResponseDTO;
 import com.uit.tms.TaskManagement.service.UserService;
 
@@ -35,15 +34,15 @@ public class UserController implements UserApi {
 	}
 
 	@Override
-	public ResponseEntity<UserResponseDTO> updateUser(Long userId, @Valid UserRegisterRequestDTO userRegisterRequestDTO)
-			throws Exception {
-		return ResponseEntity.status(HttpStatus.CREATED).body(service.updateUser(userId, userRegisterRequestDTO));
-	}
-
-	@Override
 	public ResponseEntity<UserResponseDTO> assignRoleToUser(Long userId,
 			@Valid AssignRoleToUserRequest assignRoleToUserRequest) throws Exception {
 		return ResponseEntity.ok(service.assignRoleToUser(userId, assignRoleToUserRequest));
+	}
+
+	@Override
+	public ResponseEntity<Void> deleteUser(Long userId) throws Exception {
+		service.deleteUser(userId);
+		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
 }

@@ -8,11 +8,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import com.uit.tms.TaskManagement.entity.RoleEntity;
 import com.uit.tms.TaskManagement.entity.UserEntity;
 import com.uit.tms.TaskManagement.mapper.UserMapper;
 import com.uit.tms.TaskManagement.model.AuthResponseDTO;
 import com.uit.tms.TaskManagement.model.UserLoginRequestDTO;
 import com.uit.tms.TaskManagement.model.UserRegisterRequestDTO;
+import com.uit.tms.TaskManagement.repository.RoleRepository;
 import com.uit.tms.TaskManagement.repository.UserRepository;
 import com.uit.tms.TaskManagement.service.AuthService;
 import com.uit.tms.TaskManagement.util.JwtUtil;
@@ -24,10 +26,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Validated
 public class AuthServiceImpl implements AuthService {
+	
+	private static final String ROLE_USER = "USER";
 
 	private final AuthenticationManager authManager;
 
 	private final UserRepository userRepository;
+	
+	private final RoleRepository roleRepository;
 
 	private final PasswordEncoder passwordEncoder;
 
@@ -57,8 +63,12 @@ public class AuthServiceImpl implements AuthService {
 			throw new RuntimeException("User already exists");
 		}
 		UserEntity user = new UserEntity();
-		mapper.updateEntityFromDto(request, user);
+		mapper.updateEntityFromRegisterDto(request, user);
+		RoleEntity userRole = roleRepository.findByName(ROLE_USER).orElseGet(() -> {
+			return roleRepository.save(new RoleEntity(null, ROLE_USER, null));
+		});
 		user.setPassword(passwordEncoder.encode(request.getPassword()));
+		user.getRoles().add(userRole);
 		userRepository.save(user);
 		return true;
 	}
