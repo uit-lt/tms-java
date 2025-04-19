@@ -1,5 +1,6 @@
 package com.uit.tms.TaskManagement.controller;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -219,6 +220,36 @@ public class HomeController {
         @GetMapping("/reset-password")
         public String resetPassword() {
                 return "auths/reset";
+        }
+
+        @GetMapping("/projects")
+        public String projectList(Model model) {
+                // Sample project data
+                List<Project> projects = Arrays.asList(
+                                new Project(1L, "Website Redesign"),
+                                new Project(2L, "API Development"),
+                                new Project(3L, "Mobile App Development"));
+
+                model.addAttribute("projects", projects);
+                return "projects/list";
+        }
+
+        @GetMapping("/projects/new")
+        public String newProjectForm(Model model) {
+                return "projects/form";
+        }
+
+        @GetMapping("/projects/{id}/edit")
+        public String editProjectForm(@PathVariable Long id, Model model) {
+                // Mock data for editing a project
+                Project project = new Project(id, "Mock Project Name", "Mock Project Description",
+                                LocalDate.now(), LocalDate.now().plusDays(30), Priority.MEDIUM, "In Progress");
+                project.setId(id);
+                project.setName("Project " + id);
+                System.out.println("Project: " + project);
+                logger.info("Project: {}", project);
+                model.addAttribute("project", project);
+                return "projects/form";
         }
 
 }
