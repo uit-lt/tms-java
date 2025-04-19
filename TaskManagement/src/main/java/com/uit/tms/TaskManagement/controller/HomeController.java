@@ -190,4 +190,35 @@ public class HomeController {
                 // Redirect to the task details page
                 return "redirect:/task/" + id;
         }
+
+        @GetMapping("/login")
+        public String login() {
+                return "auths/login";
+        }
+
+        @GetMapping("/register")
+        public String register() {
+                return "auths/register";
+        }
+
+        @GetMapping("/user")
+        public String user() {
+                return "auths/user";
+        }
+
+        @GetMapping("/profile")
+        public String profile() {
+                return "auths/profile";
+        }
+
+        @GetMapping("/forgot-password")
+        public String forgotPassword() {
+                return "auths/forgot";
+        }
+
+        @GetMapping("/reset-password")
+        public String resetPassword() {
+                return "auths/reset";
+        }
+
 }
