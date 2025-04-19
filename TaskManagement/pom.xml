@@ -32,7 +32,10 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
-
+<dependency>
+    <groupId>nz.net.ultraq.thymeleaf</groupId>
+    <artifactId>thymeleaf-layout-dialect</artifactId>
+</dependency>
         <!-- Spring Boot DevTools for automatic reload during development -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

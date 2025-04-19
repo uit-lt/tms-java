@@ -1,0 +1,98 @@
+<!-- templates/layout.html -->
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">
+      Task Management System
+    </title>
+
+    <!-- Tailwind CSS via CDN -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Custom CSS for any additional styling -->
+    <style>
+      /* Any custom styles that can't be handled by Tailwind */
+    </style>
+  </head>
+  <body class="flex flex-col min-h-screen bg-gray-100">
+    <!-- Navigation Bar -->
+    <nav class="bg-indigo-600 shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center">
+            <a href="/" class="flex-shrink-0 flex items-center">
+              <span class="text-white text-xl font-bold"
+                >Task Management System</span
+              >
+            </a>
+            <div class="hidden md:ml-6 md:flex md:space-x-8">
+              <a
+                th:href="@{/}"
+                class="text-white hover:text-indigo-200 px-3 py-2 rounded-md text-sm font-medium"
+                >Home</a
+              >
+              <a
+                th:href="@{/tasks-list}"
+                class="text-white hover:text-indigo-200 px-3 py-2 rounded-md text-sm font-medium"
+                >Tasks</a
+              >
+            </div>
+          </div>
+          <div class="flex items-center">
+            <button
+              class="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded-md text-sm font-medium"
+            >
+              author
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Mobile menu, toggle classes based on menu state -->
+      <div class="md:hidden">
+        <div class="px-2 pt-2 pb-3 space-y-1">
+          <a
+            th:href="@{/}"
+            class="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md text-base font-medium"
+            >Home</a
+          >
+          <a
+            th:href="@{/tasks-list}"
+            class="text-white hover:bg-indigo-700 block px-3 py-2 rounded-md text-base font-medium"
+            >Tasks</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="flex-grow">
+      <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <div layout:fragment="content">
+          <!-- This is where page-specific content will be inserted -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white">
+      <div
+        class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 border-t border-gray-200"
+      >
+        <div class="text-center text-sm text-gray-500">
+          © 2025 Task Management System. All rights reserved.
+        </div>
+      </div>
+    </footer>
+
+    <!-- Any additional scripts -->
+    <th:block layout:fragment="scripts"></th:block>
+  </body>
+</html>
