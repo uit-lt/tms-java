@@ -1,0 +1,431 @@
+<!-- integrations/configure.html -->
+
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout}"
+>
+  <head>
+    <title>Configure Integration</title>
+  </head>
+  <body class="bg-gray-100">
+    <div layout:fragment="content">
+      <!-- Page Header -->
+      <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Configure Integration</h1>
+        <a
+          th:href="@{/integrations}"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-150"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
+          </svg>
+          Back to Integrations
+        </a>
+      </div>
+
+      <!-- Integration Settings Card -->
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+        <div
+          class="px-4 py-5 sm:px-6 flex justify-between items-center border-b border-gray-200"
+        >
+          <div>
+            <h3
+              class="text-lg leading-6 font-medium text-gray-900"
+              th:text="${integration.platform.name}"
+            >
+              Platform Name
+            </h3>
+            <p
+              class="mt-1 max-w-2xl text-sm text-gray-500"
+              th:text="'Connected on ' + ${#temporals.format(integration.connectedOn, 'yyyy-MM-dd')}"
+            >
+              Connection date
+            </p>
+          </div>
+          <span
+            class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+            >Connected</span
+          >
+        </div>
+
+        <div class="px-4 py-5 sm:p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Synchronization Settings
+          </h3>
+          <form
+            th:action="@{/integrations/{id}(id=${integration.id})}"
+            method="post"
+          >
+            <div class="space-y-6">
+              <div class="max-w-xl">
+                <!-- Sync Tasks -->
+                <div class="mb-6">
+                  <div class="flex items-center mb-2">
+                    <label
+                      for="syncTasks"
+                      class="flex items-center cursor-pointer"
+                    >
+                      <div class="relative">
+                        <input
+                          type="checkbox"
+                          id="syncTasks"
+                          name="syncTasks"
+                          class="sr-only"
+                          th:checked="${integration.syncTasks}"
+                        />
+                        <div
+                          class="block bg-gray-200 w-14 h-8 rounded-full"
+                        ></div>
+                        <div
+                          class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"
+                        ></div>
+                      </div>
+                      <div class="ml-3 text-gray-700 font-medium">
+                        Sync Tasks
+                      </div>
+                    </label>
+                  </div>
+                  <p class="text-sm text-gray-500 ml-14">
+                    When enabled, tasks will be synchronized between systems
+                    automatically
+                  </p>
+                </div>
+
+                <!-- Sync Comments -->
+                <div class="mb-6">
+                  <div class="flex items-center mb-2">
+                    <label
+                      for="syncComments"
+                      class="flex items-center cursor-pointer"
+                    >
+                      <div class="relative">
+                        <input
+                          type="checkbox"
+                          id="syncComments"
+                          name="syncComments"
+                          class="sr-only"
+                          th:checked="${integration.syncComments}"
+                        />
+                        <div
+                          class="block bg-gray-200 w-14 h-8 rounded-full"
+                        ></div>
+                        <div
+                          class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"
+                        ></div>
+                      </div>
+                      <div class="ml-3 text-gray-700 font-medium">
+                        Sync Comments
+                      </div>
+                    </label>
+                  </div>
+                  <p class="text-sm text-gray-500 ml-14">
+                    When enabled, comments on tasks will be synchronized between
+                    systems
+                  </p>
+                </div>
+
+                <!-- Sync Direction -->
+                <div class="mb-6">
+                  <label
+                    for="syncDirection"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                    >Sync Direction</label
+                  >
+                  <select
+                    name="syncDirection"
+                    id="syncDirection"
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  >
+                    <option value="bidirectional" selected>
+                      Bidirectional
+                    </option>
+                    <option value="push">Push only (TMS → Platform)</option>
+                    <option value="pull">Pull only (Platform → TMS)</option>
+                  </select>
+                </div>
+
+                <!-- Sync Frequency -->
+                <div class="mb-6">
+                  <label
+                    for="syncFrequency"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                    >Sync Frequency</label
+                  >
+                  <select
+                    name="syncFrequency"
+                    id="syncFrequency"
+                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                  >
+                    <option value="realtime" selected>Real-time</option>
+                    <option value="hourly">Hourly</option>
+                    <option value="daily">Daily</option>
+                    <option value="manual">Manual only</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Field Mapping Section -->
+            <div class="mt-8">
+              <h3 class="text-lg font-medium text-gray-900 mb-2">
+                Field Mapping
+              </h3>
+              <p class="text-sm text-gray-500 mb-4">
+                Map fields between TMS and
+                <span th:text="${integration.platform.name}">Platform</span>
+              </p>
+
+              <div
+                class="overflow-x-auto shadow border-b border-gray-200 rounded-lg"
+              >
+                <table class="min-w-full divide-y divide-gray-200">
+                  <thead class="bg-gray-50">
+                    <tr>
+                      <th
+                        scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                        TMS Field
+                      </th>
+                      <th
+                        scope="col"
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                        th:text="${integration.platform.name} + ' Field'"
+                      >
+                        Platform Field
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white divide-y divide-gray-200">
+                    <tr th:each="sourceField : ${sourceFields}">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div
+                          class="font-medium text-gray-900"
+                          th:text="${sourceField.value}"
+                        >
+                          Field Name
+                        </div>
+                        <div
+                          class="text-sm text-gray-500"
+                          th:text="${sourceField.key}"
+                        >
+                          field_key
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <select
+                          th:name="'fieldMappings[' + ${sourceField.key} + ']'"
+                          class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
+                        >
+                          <option value="">Don't map</option>
+                          <option
+                            th:each="targetField : ${targetFields}"
+                            th:value="${targetField.key}"
+                            th:text="${targetField.value}"
+                            th:selected="${currentMappings.get(sourceField.key) == targetField.key}"
+                          >
+                            Target Field
+                          </option>
+                        </select>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="mt-6 flex justify-end">
+              <button
+                type="submit"
+                class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    d="M7.707 10.293a1 1 0 10-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 11.586V6h1a2 2 0 012 2v7a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h1v5.586l-1.293-1.293zM9 4a1 1 0 012 0v2H9V4z"
+                  />
+                </svg>
+                Save Configuration
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Advanced Options Card -->
+      <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+        <div class="px-4 py-5 border-b border-gray-200 sm:px-6">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Advanced Options
+          </h3>
+        </div>
+        <div class="px-4 py-5 sm:p-6 divide-y divide-gray-200">
+          <!-- Sync History Section -->
+          <div class="mb-6 pb-6">
+            <h4 class="text-base font-medium text-gray-900 mb-3">
+              Sync History
+            </h4>
+            <div class="bg-blue-50 border-l-4 border-blue-400 p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg
+                    class="h-5 w-5 text-blue-400"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm text-blue-700">
+                    Synchronization history will be available after the first
+                    sync.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Manual Sync Section -->
+          <div class="py-6">
+            <h4 class="text-base font-medium text-gray-900 mb-2">
+              Manual Sync
+            </h4>
+            <p class="text-sm text-gray-500 mb-4">
+              Trigger manual synchronization now
+            </p>
+            <form
+              th:action="@{/integrations/{id}/sync(id=${integration.id})}"
+              method="post"
+              class="d-inline"
+            >
+              <button
+                type="submit"
+                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                Sync Now
+              </button>
+            </form>
+          </div>
+
+          <!-- Danger Zone Section -->
+          <div class="pt-6">
+            <h4 class="text-base font-medium text-gray-900 mb-2">
+              Danger Zone
+            </h4>
+            <p class="text-sm text-gray-500 mb-4">
+              Reset integration configuration
+            </p>
+            <div class="flex space-x-4">
+              <form
+                th:action="@{/integrations/{id}/reset(id=${integration.id})}"
+                method="post"
+                class="d-inline"
+              >
+                <button
+                  type="submit"
+                  class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                  onclick="return confirm('Are you sure you want to reset all configuration? This cannot be undone.')"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                  Reset Configuration
+                </button>
+              </form>
+
+              <form
+                th:action="@{/integrations/{id}(id=${integration.id})}"
+                method="post"
+                class="d-inline"
+              >
+                <input type="hidden" name="_method" value="delete" />
+                <button
+                  type="submit"
+                  class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                  onclick="return confirm('Are you sure you want to disconnect this platform? All synchronized data will remain in both systems.')"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  Disconnect Platform
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <style>
+      /* Custom toggle switch styles */
+      input:checked ~ .dot {
+        transform: translateX(100%);
+      }
+      input:checked ~ .block {
+        background-color: #4f46e5;
+      }
+      .dot {
+        transition: all 0.3s ease-in-out;
+      }
+    </style>
+  </body>
+</html>

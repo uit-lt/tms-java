@@ -34,7 +34,7 @@
               id="name"
               name="name"
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              th:value="${project.name}"
+              th:value="${project != null ? project.name : ''}"
               placeholder="Enter project name"
               required
             />
@@ -49,7 +49,7 @@
               id="description"
               name="description"
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              th:text="${project.description}"
+              th:text="${project != null ? project.description : ''}"
               placeholder="Enter project description"
               rows="4"
             ></textarea>
@@ -65,7 +65,7 @@
               id="startDate"
               name="startDate"
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              th:value="${project.startDate}"
+              th:value="${project != null ? project.startDate : ''}"
               required
             />
           </div>
@@ -80,7 +80,7 @@
               id="endDate"
               name="endDate"
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              th:value="${project.endDate}"
+              th:value="${project != null ? project.endDate : ''}"
             />
           </div>
           <div class="mb-4">
@@ -93,11 +93,25 @@
               id="priority"
               name="priority"
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              th:value="${project.priority}"
             >
-              <option value="LOW">Low</option>
-              <option value="MEDIUM">Medium</option>
-              <option value="HIGH">High</option>
+              <option
+                value="LOW"
+                th:selected="${project != null && project.priority == 'LOW'}"
+              >
+                Low
+              </option>
+              <option
+                value="MEDIUM"
+                th:selected="${project != null && project.priority == 'MEDIUM'}"
+              >
+                Medium
+              </option>
+              <option
+                value="HIGH"
+                th:selected="${project != null && project.priority == 'HIGH'}"
+              >
+                High
+              </option>
             </select>
           </div>
           <div class="mb-4">
@@ -110,11 +124,25 @@
               id="status"
               name="status"
               class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              th:value="${project.status}"
             >
-              <option value="NOT_STARTED">Not Started</option>
-              <option value="IN_PROGRESS">In Progress</option>
-              <option value="COMPLETED">Completed</option>
+              <option
+                value="NOT_STARTED"
+                th:selected="${project != null && project.status == 'NOT_STARTED'}"
+              >
+                Not Started
+              </option>
+              <option
+                value="IN_PROGRESS"
+                th:selected="${project != null && project.status == 'IN_PROGRESS'}"
+              >
+                In Progress
+              </option>
+              <option
+                value="COMPLETED"
+                th:selected="${project != null && project.status == 'COMPLETED'}"
+              >
+                Completed
+              </option>
             </select>
           </div>
           <div class="flex items-center justify-between">
