@@ -1,0 +1,273 @@
+<!-- templates/task/form.html -->
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout}"
+>
+  <head>
+    <title th:text="${task.id != null ? 'Edit Task' : 'Create Task'}">
+      Create Task
+    </title>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <!-- Page Header -->
+      <div class="pb-5 border-b border-gray-200">
+        <h2
+          class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl"
+          th:text="${task.id != null ? 'Edit Task' : 'Create Task'}"
+        >
+          Create Task
+        </h2>
+        <p class="mt-1 text-sm text-gray-500" th:if="${task.id == null}">
+          Create a new task to track your work.
+        </p>
+        <p class="mt-1 text-sm text-gray-500" th:if="${task.id != null}">
+          Update the details of your task.
+        </p>
+      </div>
+
+      <!-- Task Form -->
+      <div class="mt-6">
+        <form
+          th:action="${task.id != null ? '/task/' + task.id + '/edit' : '/task/new'}"
+          method="post"
+          th:object="${task}"
+          class="space-y-6"
+        >
+          <input type="hidden" th:field="*{id}" />
+
+          <!-- Title -->
+          <div>
+            <label for="title" class="block text-sm font-medium text-gray-700"
+              >Title</label
+            >
+            <div class="mt-1">
+              <input
+                type="text"
+                id="title"
+                name="title"
+                th:field="*{title}"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                placeholder="Enter task title"
+                required
+              />
+            </div>
+            <p
+              class="mt-1 text-sm text-red-600"
+              th:if="${#fields.hasErrors('title')}"
+              th:errors="*{title}"
+            >
+              Title error message
+            </p>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label
+              for="description"
+              class="block text-sm font-medium text-gray-700"
+              >Description</label
+            >
+            <div class="mt-1">
+              <textarea
+                id="description"
+                name="description"
+                rows="4"
+                th:field="*{description}"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                placeholder="Enter task description"
+              ></textarea>
+            </div>
+            <p
+              class="mt-1 text-sm text-red-600"
+              th:if="${#fields.hasErrors('description')}"
+              th:errors="*{description}"
+            >
+              Description error message
+            </p>
+          </div>
+
+          <!-- Due Date -->
+          <div>
+            <label for="dueDate" class="block text-sm font-medium text-gray-700"
+              >Due Date</label
+            >
+            <div class="mt-1">
+              <input
+                type="date"
+                id="dueDate"
+                name="dueDate"
+                th:field="*{dueDate}"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              />
+            </div>
+            <p
+              class="mt-1 text-sm text-red-600"
+              th:if="${#fields.hasErrors('dueDate')}"
+              th:errors="*{dueDate}"
+            >
+              Due date error message
+            </p>
+          </div>
+
+          <!-- Status -->
+          <div>
+            <label for="status" class="block text-sm font-medium text-gray-700"
+              >Status</label
+            >
+            <div class="mt-1">
+              <select
+                id="status"
+                name="status"
+                th:field="*{status}"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              >
+                <option value="TO_DO">To Do</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="COMPLETED">Completed</option>
+                <option value="BLOCKED">Blocked</option>
+              </select>
+            </div>
+            <p
+              class="mt-1 text-sm text-red-600"
+              th:if="${#fields.hasErrors('status')}"
+              th:errors="*{status}"
+            >
+              Status error message
+            </p>
+          </div>
+
+          <!-- Priority -->
+          <div>
+            <label
+              for="priority"
+              class="block text-sm font-medium text-gray-700"
+              >Priority</label
+            >
+            <div class="mt-1">
+              <select
+                id="priority"
+                name="priority"
+                th:field="*{priority}"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              >
+                <option value="LOW">Low</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HIGH">High</option>
+                <option value="URGENT">Urgent</option>
+              </select>
+            </div>
+            <p
+              class="mt-1 text-sm text-red-600"
+              th:if="${#fields.hasErrors('priority')}"
+              th:errors="*{priority}"
+            >
+              Priority error message
+            </p>
+          </div>
+
+          <!-- Platform -->
+          <div>
+            <label
+              for="platform"
+              class="block text-sm font-medium text-gray-700"
+              >Platform</label
+            >
+            <div class="mt-1">
+              <select
+                id="platform"
+                name="platform"
+                th:field="*{platform}"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              >
+                <option value="WEB">Web</option>
+                <option value="MOBILE">Mobile</option>
+                <option value="DESKTOP">Desktop</option>
+                <option value="API">API</option>
+              </select>
+            </div>
+            <p
+              class="mt-1 text-sm text-red-600"
+              th:if="${#fields.hasErrors('platform')}"
+              th:errors="*{platform}"
+            >
+              Platform error message
+            </p>
+          </div>
+
+          <!-- Assignee -->
+          <!-- <div>
+            <label
+              for="assignee"
+              class="block text-sm font-medium text-gray-700"
+              >Assignee</label
+            >
+            <div class="mt-1">
+              <select
+                id="assignee"
+                name="assignee"
+                th:field="*{assigneeId}"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              >
+                <option value="">Unassigned</option>
+                <option
+                  th:each="user : ${users}"
+                  th:value="${user.id}"
+                  th:text="${user.name}"
+                >
+                  John Doe
+                </option>
+              </select>
+            </div>
+          </div> -->
+
+          <!-- Tags (multi-select) -->
+          <div>
+            <label for="tags" class="block text-sm font-medium text-gray-700"
+              >Tags</label
+            >
+            <div class="mt-1">
+              <select
+                id="tags"
+                name="tags"
+                multiple
+                th:field="*{tags}"
+                class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+              >
+                <option
+                  th:each="tag : ${availableTags}"
+                  th:value="${tag.id}"
+                  th:text="${tag.name}"
+                >
+                  Frontend
+                </option>
+              </select>
+            </div>
+            <p class="mt-1 text-sm text-gray-500">
+              Hold down the Ctrl (Windows) or Command (Mac) button to select
+              multiple options.
+            </p>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="flex justify-end">
+            <a
+              th:href="@{/task}"
+              class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Cancel
+            </a>
+            <button
+              type="submit"
+              class="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
