@@ -1,0 +1,534 @@
+<!-- templates/task/form.html -->
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  layout:decorate="~{layout}"
+>
+  <head>
+    <title th:text="${task.id != null ? 'Edit Task' : 'Create Task'}">
+      Create Task
+    </title>
+    <style>
+      /* Custom styles for form enhancements */
+      .priority-low {
+        background-color: #e5f6fd;
+        border-left: 4px solid #38bdf8;
+      }
+      .priority-medium {
+        background-color: #f0f9eb;
+        border-left: 4px solid #84cc16;
+      }
+      .priority-high {
+        background-color: #fef3c7;
+        border-left: 4px solid #f59e0b;
+      }
+      .priority-urgent {
+        background-color: #fee2e2;
+        border-left: 4px solid #ef4444;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-right: 0.5rem;
+      }
+
+      .status-todo {
+        background-color: #e5e7eb;
+        color: #4b5563;
+      }
+      .status-progress {
+        background-color: #dbeafe;
+        color: #2563eb;
+      }
+      .status-completed {
+        background-color: #d1fae5;
+        color: #059669;
+      }
+      .status-blocked {
+        background-color: #fee2e2;
+        color: #dc2626;
+      }
+
+      .form-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+          0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .tag-item {
+        display: inline-block;
+        background-color: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #3b82f6;
+        border-radius: 9999px;
+        padding: 0.25rem 0.75rem;
+        margin: 0.25rem;
+        font-size: 0.75rem;
+      }
+
+      .custom-select-wrapper {
+        position: relative;
+      }
+
+      .custom-select-wrapper::after {
+        content: "↓";
+        position: absolute;
+        top: 50%;
+        right: 12px;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+
+      .date-input-wrapper {
+        position: relative;
+      }
+
+      .date-input-wrapper::after {
+        content: "📅";
+        position: absolute;
+        top: 50%;
+        right: 0px;
+        transform: translateY(-50%);
+        pointer-events: none;
+      }
+    </style>
+    <script>
+      // Status preview updater - moved outside to global scope
+      function updateStatusPreview(status) {
+        const statusPreview = document.getElementById("statusPreview");
+        if (!statusPreview) return;
+
+        // Remove all existing status classes
+        statusPreview.classList.remove(
+          "status-todo",
+          "status-progress",
+          "status-completed",
+          "status-blocked"
+        );
+        console.log(statusPreview, status);
+        // Set the appropriate class and text
+        switch (status) {
+          case "TO_DO":
+            statusPreview.classList.add("status-todo");
+            statusPreview.textContent = "To Do";
+            break;
+          case "IN_PROGRESS":
+            statusPreview.classList.add("status-progress");
+            statusPreview.textContent = "In Progress";
+            break;
+          case "COMPLETED":
+            statusPreview.classList.add("status-completed");
+            statusPreview.textContent = "Completed";
+            break;
+          case "BLOCKED":
+            statusPreview.classList.add("status-blocked");
+            statusPreview.textContent = "Blocked";
+            break;
+        }
+      }
+
+      // Priority preview updater - moved outside to global scope
+      function updatePriorityPreview(priority) {
+        const priorityPreview = document.getElementById("priorityPreview");
+        if (!priorityPreview) return;
+
+        // Remove all existing priority classes
+        priorityPreview.classList.remove(
+          "priority-low",
+          "priority-medium",
+          "priority-high",
+          "priority-urgent"
+        );
+
+        // Set the appropriate class and text
+        switch (priority) {
+          case "LOW":
+            priorityPreview.classList.add("priority-low");
+            priorityPreview.textContent = "Low Priority";
+            break;
+          case "MEDIUM":
+            priorityPreview.classList.add("priority-medium");
+            priorityPreview.textContent = "Medium Priority";
+            break;
+          case "HIGH":
+            priorityPreview.classList.add("priority-high");
+            priorityPreview.textContent = "High Priority";
+            break;
+          case "URGENT":
+            priorityPreview.classList.add("priority-urgent");
+            priorityPreview.textContent = "Urgent Priority";
+            break;
+        }
+      }
+
+      // Tags preview updater - moved outside to global scope
+      function updateTagsPreview() {
+        const tagsSelect = document.getElementById("tags");
+        const tagsPreview = document.getElementById("selectedTagsPreview");
+        if (!tagsSelect || !tagsPreview) return;
+
+        // Clear existing tags
+        tagsPreview.innerHTML = "";
+
+        // Add a tag element for each selected option
+        const selectedOptions = Array.from(tagsSelect.selectedOptions);
+        if (selectedOptions.length > 0) {
+          selectedOptions.forEach((option) => {
+            const tag = document.createElement("span");
+            tag.className = "tag-item";
+            tag.textContent = option.textContent;
+            tagsPreview.appendChild(tag);
+          });
+        } else {
+          const noTagsMsg = document.createElement("span");
+          noTagsMsg.className = "text-sm text-gray-500";
+          noTagsMsg.textContent = "No tags selected";
+          tagsPreview.appendChild(noTagsMsg);
+        }
+      }
+
+      // Initialize preview elements based on initial values
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize status preview
+        const statusSelect = document.getElementById("status");
+        if (statusSelect) {
+          updateStatusPreview(statusSelect.value);
+        }
+
+        // Initialize priority preview
+        const prioritySelect = document.getElementById("priority");
+        if (prioritySelect) {
+          updatePriorityPreview(prioritySelect.value);
+        }
+
+        // Initialize tags preview
+        const tagsSelect = document.getElementById("tags");
+        if (tagsSelect) {
+          updateTagsPreview();
+          tagsSelect.addEventListener("change", updateTagsPreview);
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <!-- Page Header -->
+      <div class="bg-white shadow rounded-lg px-6 py-4 mb-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <h2
+              class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl"
+              th:text="${task.id != null ? 'Edit Task' : 'Create Task'}"
+            >
+              Create Task
+            </h2>
+            <p class="mt-1 text-sm text-gray-500" th:if="${task.id == null}">
+              Create a new task to track your work.
+            </p>
+            <p class="mt-1 text-sm text-gray-500" th:if="${task.id != null}">
+              Update the details of your task.
+            </p>
+          </div>
+
+          <!-- Task ID Badge (for edit mode) -->
+          <div
+            th:if="${task.id != null}"
+            class="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm font-medium"
+          >
+            Task ID: <span th:text="${task.id}">123</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Task Form -->
+      <div class="mt-6">
+        <form
+          th:action="${task.id != null ? '/task/' + task.id + '/edit' : '/task/new'}"
+          method="post"
+          th:object="${task}"
+          class="space-y-6"
+        >
+          <input type="hidden" th:field="*{id}" />
+
+          <!-- Main Form Content -->
+          <div class="form-card">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Left Column -->
+              <div>
+                <!-- Title -->
+                <div class="mb-5">
+                  <label
+                    for="title"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                  >
+                    Title <span class="text-red-600">*</span>
+                  </label>
+                  <div>
+                    <input
+                      type="text"
+                      id="title"
+                      name="title"
+                      th:field="*{title}"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md transition duration-150 ease-in-out"
+                      placeholder="Enter a clear, descriptive title"
+                      required
+                    />
+                  </div>
+                  <p
+                    class="mt-1 text-sm text-red-600"
+                    th:if="${#fields.hasErrors('title')}"
+                    th:errors="*{title}"
+                  >
+                    Title error message
+                  </p>
+                </div>
+
+                <!-- Description -->
+                <div class="mb-5">
+                  <label
+                    for="description"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                    >Description</label
+                  >
+                  <div>
+                    <textarea
+                      id="description"
+                      name="description"
+                      rows="6"
+                      th:field="*{description}"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md transition duration-150 ease-in-out"
+                      placeholder="Enter detailed description of the task..."
+                    ></textarea>
+                  </div>
+                  <p
+                    class="mt-1 text-sm text-red-600"
+                    th:if="${#fields.hasErrors('description')}"
+                    th:errors="*{description}"
+                  >
+                    Description error message
+                  </p>
+                </div>
+
+                <!-- Due Date -->
+                <div class="mb-5">
+                  <label
+                    for="dueDate"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                    >Due Date</label
+                  >
+                  <div class="date-input-wrapper">
+                    <input
+                      type="date"
+                      id="dueDate"
+                      name="dueDate"
+                      th:field="*{dueDate}"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md transition duration-150 ease-in-out"
+                    />
+                  </div>
+                  <p
+                    class="mt-1 text-sm text-red-600"
+                    th:if="${#fields.hasErrors('dueDate')}"
+                    th:errors="*{dueDate}"
+                  >
+                    Due date error message
+                  </p>
+                </div>
+              </div>
+
+              <!-- Right Column -->
+              <div>
+                <!-- Status with Visual Indicators -->
+                <div class="mb-5">
+                  <label
+                    for="status"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                    >Status</label
+                  >
+                  <div class="custom-select-wrapper">
+                    <select
+                      id="status"
+                      name="status"
+                      th:field="*{status}"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md transition duration-150 ease-in-out"
+                      onchange="updateStatusPreview(this.value)"
+                    >
+                      <option value="TO_DO">To Do</option>
+                      <option value="IN_PROGRESS">In Progress</option>
+                      <option value="COMPLETED">Completed</option>
+                      <option value="BLOCKED">Blocked</option>
+                    </select>
+                  </div>
+                  <div class="mt-2 flex items-center">
+                    <span class="mr-2 text-sm text-gray-500">Preview:</span>
+                    <span id="statusPreview" class="status-badge status-todo"
+                      >To Do</span
+                    >
+                  </div>
+                  <p
+                    class="mt-1 text-sm text-red-600"
+                    th:if="${#fields.hasErrors('status')}"
+                    th:errors="*{status}"
+                  >
+                    Status error message
+                  </p>
+                </div>
+
+                <!-- Priority with Visual Indicators -->
+                <div class="mb-5">
+                  <label
+                    for="priority"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                    >Priority</label
+                  >
+                  <div class="custom-select-wrapper">
+                    <select
+                      id="priority"
+                      name="priority"
+                      th:field="*{priority}"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md transition duration-150 ease-in-out"
+                      onchange="updatePriorityPreview(this.value)"
+                    >
+                      <option value="LOW">Low</option>
+                      <option value="MEDIUM">Medium</option>
+                      <option value="HIGH">High</option>
+                      <option value="URGENT">Urgent</option>
+                    </select>
+                  </div>
+                  <div class="mt-2">
+                    <div
+                      id="priorityPreview"
+                      class="priority-low p-2 rounded-md text-sm"
+                    >
+                      Low Priority
+                    </div>
+                  </div>
+                  <p
+                    class="mt-1 text-sm text-red-600"
+                    th:if="${#fields.hasErrors('priority')}"
+                    th:errors="*{priority}"
+                  >
+                    Priority error message
+                  </p>
+                </div>
+
+                <!-- Platform -->
+                <div class="mb-5">
+                  <label
+                    for="platform"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                    >Platform</label
+                  >
+                  <div class="custom-select-wrapper">
+                    <select
+                      id="platform"
+                      name="platform"
+                      th:field="*{platform}"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md transition duration-150 ease-in-out"
+                    >
+                      <option value="WEB">Web</option>
+                      <option value="MOBILE">Mobile</option>
+                      <option value="DESKTOP">Desktop</option>
+                      <option value="API">API</option>
+                    </select>
+                  </div>
+                  <p
+                    class="mt-1 text-sm text-red-600"
+                    th:if="${#fields.hasErrors('platform')}"
+                    th:errors="*{platform}"
+                  >
+                    Platform error message
+                  </p>
+                </div>
+
+                <!-- Tags (Enhanced multi-select) -->
+                <div class="mb-5">
+                  <label
+                    for="tags"
+                    class="block text-sm font-medium text-gray-700 mb-1"
+                    >Tags</label
+                  >
+                  <div>
+                    <select
+                      id="tags"
+                      name="tags"
+                      multiple
+                      th:field="*{tags}"
+                      class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md transition duration-150 ease-in-out"
+                      style="min-height: 120px"
+                    >
+                      <option
+                        th:each="tag : ${availableTags}"
+                        th:value="${tag.id}"
+                        th:text="${tag.name}"
+                      >
+                        Frontend
+                      </option>
+                    </select>
+                  </div>
+                  <div id="selectedTagsPreview" class="mt-2 flex flex-wrap">
+                    <!-- Tags will be shown here via JS -->
+                  </div>
+                  <p class="mt-1 text-xs text-gray-500">
+                    Hold down Ctrl (Windows) or Command (Mac) to select multiple
+                    tags
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="flex justify-end space-x-4">
+            <a
+              th:href="@{/tasks}"
+              class="px-5 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out flex items-center"
+            >
+              <svg
+                class="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                ></path>
+              </svg>
+              Cancel
+            </a>
+            <button
+              type="submit"
+              class="px-5 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out flex items-center"
+            >
+              <svg
+                class="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                ></path>
+              </svg>
+              Save Task
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
