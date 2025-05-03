@@ -1,10 +1,12 @@
+docker-build-prod:
+	cp .env.example .env
+	./scripts/generate-nginx-config.sh
+	docker compose -f docker-compose.yml up --build
 docker-build:
 	cp .env.example .env
 	./scripts/generate-nginx-config.sh
-	docker compose up --build
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 docker-up:
-	cp .env.example .env
-	./scripts/generate-nginx-config.sh
-	docker compose up
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up
 docker-down:
-	docker compose down
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down

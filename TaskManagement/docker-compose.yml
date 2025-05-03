@@ -16,12 +16,9 @@ services:
     ports:
       - "${NGINX_HOST_HTTP_PORT:-80}:80"
     platform: ${PLATFORM:-linux/amd64}
-    environment:
-      - SPRING_HOST_PORT=${SPRING_HOST_PORT}
     networks:
       - tms_jar
     depends_on:
-      - db
       - spring_app
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost || exit 1" ]
@@ -43,31 +40,36 @@ services:
       - tms_jar
 
   spring_app:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile
     container_name: "${COMPOSE_PROJECT_NAME}-${APP_HOST}"
     ports:
       - "${SPRING_HOST_PORT}:${SPRING_LOCAL_HOST_PORT}"
     depends_on:
       - db
+      - phpmyadmin
     networks:
       - tms_jar
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/${MYSQL_DATABASE:-tms_jar}
-      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER:-root}
-      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-root}
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    restart: always
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-root}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-root}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080 || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: "${COMPOSE_PROJECT_NAME}-phpmyadmin"
     platform: ${PLATFORM:-linux/amd64}
     restart: always
     ports:
-      - "${PHPMYADMIN_PORT:-9024}:8380"
+      - "${PHPMYADMIN_PORT:-9024}:80"
     depends_on:
       - db
-      - spring_app
-      - nginx
     environment:
       PMA_HOST: db
       UPLOAD_LIMIT: 2048M
