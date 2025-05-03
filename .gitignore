@@ -3,3 +3,4 @@
 .DS_Store
 .env
 /TaskManagement/target/
+/TaskManagement/docker/nginx/tms.uit.local.conf
