@@ -21,6 +21,7 @@ services:
     networks:
       - tms_jar
     depends_on:
+      - db
       - spring_app
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost || exit 1" ]
@@ -36,7 +37,8 @@ services:
     ports:
       - "${MYSQL_HOST_PORT}:3306"
     environment:
-      - "MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}"
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}
+      - MYSQL_DATABASE=${MYSQL_DATABASE:-tms_jar}
     networks:
       - tms_jar
 
@@ -49,7 +51,12 @@ services:
       - db
     networks:
       - tms_jar
-
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/${MYSQL_DATABASE:-tms_jar}
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USER:-root}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD:-root}
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    restart: always
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: "${COMPOSE_PROJECT_NAME}-phpmyadmin"
@@ -57,6 +64,10 @@ services:
     restart: always
     ports:
       - "${PHPMYADMIN_PORT:-9024}:8380"
+    depends_on:
+      - db
+      - spring_app
+      - nginx
     environment:
       PMA_HOST: db
       UPLOAD_LIMIT: 2048M
