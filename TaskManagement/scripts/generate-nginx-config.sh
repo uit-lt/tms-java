@@ -8,7 +8,6 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 variables=(
   NGINX_HOST_NAME
   APP_HOST
-  SPRING_HOST_PORT
 )
 
 # Build grep pattern and envsubst pattern
