@@ -9,6 +9,8 @@ import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,13 +25,15 @@ import com.uit.tms.TaskManagement.model.Project;
 import com.uit.tms.TaskManagement.model.Tag;
 import com.uit.tms.TaskManagement.model.Task;
 import com.uit.tms.TaskManagement.model.TaskStatus;
+import com.uit.tms.TaskManagement.constants.Endpoint;
+import com.uit.tms.TaskManagement.constants.TemplateName;
 
 @Controller
 public class HomeController {
         private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
-        @GetMapping("/")
-        public String home(Model model) {
+        @GetMapping(Endpoint.HOME)
+        public String home(Model model, OAuth2AuthenticationToken authentication) {
                 // Dashboard statistics
                 model.addAttribute("totalTasks", 10);
                 model.addAttribute("completedTasks", 4);
@@ -41,11 +45,17 @@ public class HomeController {
                                 "New task 'Fix navbar issue' added",
                                 "Task 'Deploy application' assigned to you");
                 model.addAttribute("activities", activities);
-
-                return "home";
+                 if (authentication != null) {
+                        OAuth2User user = authentication.getPrincipal();
+                        String userName = user.getAttribute("login");
+                        System.out.println("User: " + userName);
+                        System.out.println("UserInfo: " + user);
+                        model.addAttribute("userName", userName);
+                } 
+                return TemplateName.HOME;
         }
 
-        @GetMapping("/tasks")
+        @GetMapping(Endpoint.TASKS)
         public String taskList(Model model) {
                 // Sample task data
                 List<Task> tasks = Arrays.asList(
@@ -72,10 +82,10 @@ public class HomeController {
                 model.addAttribute("statuses", TaskStatus.values());
                 model.addAttribute("priorities", Priority.values());
 
-                return "tasks/list";
+                return TemplateName.TASK_LIST;
         }
 
-        @GetMapping("/task/{id}")
+        @GetMapping(Endpoint.TASK_ID)
         public String taskDetail(@PathVariable Long id, Model model) {
                 // Sample task with details
                 Task task = new Task(
@@ -103,10 +113,10 @@ public class HomeController {
                 model.addAttribute("task", task);
                 model.addAttribute("task", task);
                 model.addAttribute("comments", comments);
-                return "tasks/detail";
+                return TemplateName.TASK_DETAIL;
         }
 
-        @GetMapping("/task/new")
+        @GetMapping(Endpoint.TASK_CREATE)
         public String newTaskForm(Model model) {
                 // Add empty task and selection options
                 model.addAttribute("task", new Task());
@@ -119,7 +129,7 @@ public class HomeController {
                 model.addAttribute("statuses", TaskStatus.values());
                 model.addAttribute("priorities", Priority.values());
 
-                return "tasks/form";
+                return TemplateName.TASK_FORM;
         }
 
         @GetMapping("/tasks/{id}/edit")
@@ -192,9 +202,9 @@ public class HomeController {
                 return "redirect:/task/" + id;
         }
 
-        @GetMapping("/login")
+        @GetMapping(Endpoint.LOGIN)
         public String login() {
-                return "auths/login";
+                return TemplateName.AUTH_LOGIN;
         }
 
         @GetMapping("/register")
