@@ -18,17 +18,22 @@ Task Management System built with **Spring Boot** and **MySQL**, containerized u
    cd tms-java/TaskManagement
    ```
 
-2. Create environment file
+2. Build and start the services
    ```bash
-   cp .env.example .env
+   make docker-build
    ```
 
-3. Build and start the services
-   ```bash
-   docker-compose up --build -d
-   ```
+   > **Note**: When re-build docker for dev mode, instead of ```docker compose up``` use command:
+   > ```bash
+   > make docker-up
+   > ```
 
-4. Access the application at http://tms.uit.local:8095
+    > **Note**: When build for production have to use command:
+   > ```bash
+   > make docker-build-prod
+   > ```
+
+3. Access the application at http://tms.uit.local:8095
 
    > **Note**: Add the domain to your hosts file:
    > ```
