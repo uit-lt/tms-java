@@ -34,7 +34,6 @@ services:
     ports:
       - "${MYSQL_HOST_PORT}:3306"
     environment:
-      - MYSQL_USER=${MYSQL_USER:-root}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD:-root}
       - MYSQL_DATABASE=${MYSQL_DATABASE:-tms_jar}
     networks:
@@ -60,7 +59,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-root}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
     healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8080 || exit 1" ]
+      test: [ "CMD-SHELL", "curl -f http://localhost || exit 1" ]
       interval: 30s
       timeout: 10s
       retries: 5
