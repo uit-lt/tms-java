@@ -29,7 +29,21 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
-            .cors(cors -> cors.disable()); // Disable CORS
+            .cors(cors -> cors.disable()) // Disable CORS
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/swagger-ui/**",
+                    "/actuator/**",
+                    "/v3/api-docs/**")
+                .permitAll()
+                .requestMatchers("/auth/**")
+                .permitAll()
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
+            .httpBasic(httpBasic -> httpBasic.disable()); // Disable HTTP Basic authentication
         return http.build();
     }
 
