@@ -9,8 +9,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +32,7 @@ public class HomeController {
         private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
         @GetMapping(Endpoint.HOME)
-        public String home(Model model, OAuth2AuthenticationToken authentication) {
+        public String home(Model model, Authentication authentication) {
                 // Dashboard statistics
                 model.addAttribute("totalTasks", 10);
                 model.addAttribute("completedTasks", 4);
@@ -45,13 +44,6 @@ public class HomeController {
                                 "New task 'Fix navbar issue' added",
                                 "Task 'Deploy application' assigned to you");
                 model.addAttribute("activities", activities);
-                 if (authentication != null) {
-                        OAuth2User user = authentication.getPrincipal();
-                        String userName = user.getAttribute("login");
-                        System.out.println("User: " + userName);
-                        System.out.println("UserInfo: " + user);
-                        model.addAttribute("userName", userName);
-                } 
                 return TemplateName.HOME;
         }
 

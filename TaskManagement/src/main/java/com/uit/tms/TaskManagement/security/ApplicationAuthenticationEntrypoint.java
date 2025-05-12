@@ -27,9 +27,9 @@ public class ApplicationAuthenticationEntrypoint implements AuthenticationEntryP
 
         ErrorResponseDTO body = new ErrorResponseDTO();
         body.code(HttpStatus.UNAUTHORIZED.value());
-        body.message("Unauthorized");
-        
+        body.message(HttpStatus.UNAUTHORIZED.getReasonPhrase());
 
         objectMapper.writeValue(response.getOutputStream(), body);
+        System.out.println("Unauthorized request: " + authException.getMessage());
     }
 }
