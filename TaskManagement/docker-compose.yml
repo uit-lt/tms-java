@@ -58,6 +58,9 @@ services:
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-root}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-root}
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      NGINX_HOST_NAME: ${NGINX_HOST_NAME:-tms.uit.local}
+      NGINX_HOST_HTTP_PORT: ${NGINX_HOST_HTTP_PORT:-8095}
+      SPRING_HOST_PORT: ${SPRING_HOST_PORT:-8085}
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8080 || exit 1" ]
       interval: 30s
