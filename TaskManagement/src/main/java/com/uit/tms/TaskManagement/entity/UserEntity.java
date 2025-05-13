@@ -61,5 +61,6 @@ public class UserEntity {
 	@Schema(description = "Platform type: 0 for TMS, 1 for GitHub, 2 for Jira")
 	@Builder.Default
 	private int platformType = 0;
-	
+
+	private String githubAccessToken;
 }

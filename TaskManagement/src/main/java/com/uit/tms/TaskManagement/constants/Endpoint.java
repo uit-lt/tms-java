@@ -6,7 +6,9 @@ public class Endpoint {
     public static final String TASK_ID = "/task/{id}";
     public static final String TASK_CREATE = "/task/create";
     public static final String LOGIN = "/login";
+    public static final String GITHUB = "/github";
     public static final String USER_GITHUB = "/user/github";
     public static final String LOGOUT = "/logout";
     public static final String REGISTER = "/register";
+    public static final String GITHUB_REPOS = "/github/repos";
 }

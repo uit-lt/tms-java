@@ -24,27 +24,31 @@ import lombok.RequiredArgsConstructor;
 public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
-    private final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
     private final RoleRepository roleRepository;
+    private final DefaultOAuth2UserService delegate = new DefaultOAuth2UserService();
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
         OAuth2User oauthUser = delegate.loadUser(userRequest);
         String username = oauthUser.getAttribute("login"); // GitHub username
-        String email = oauthUser.getAttribute("email"); // Sometimes null from GitHub
+        String email = oauthUser.getAttribute("email");    // May be null
 
-        // 1. Check if user exists
+        String accessToken = userRequest.getAccessToken().getTokenValue();
         Optional<UserEntity> userOpt = userRepository.findByUsername(username);
 
         if (userOpt.isPresent()) {
-            // Update info if needed
+            UserEntity user = userOpt.get();
             System.out.println("User already exists: " + username);
+            user.setGithubAccessToken(accessToken);
+            userRepository.save(user);
+            System.out.println("Updated GitHub access token: " + accessToken);
         } else {
-            RoleEntity userRole = roleRepository.findByName(Keywords.ROLE_USER).get();
+            RoleEntity userRole = roleRepository.findByName(Keywords.ROLE_USER).orElse(null);
             if (userRole == null) {
-                System.out.println("User role not found, check it out!");
+                System.out.println("User role not found, check database setup.");
+                return oauthUser;
             }
-            // 2. Create new user
+
             String password = Utils.generateRandomPassword(12);
             UserEntity newUser = new UserEntity();
             newUser.setTwoFactorEnabled(false);
@@ -52,7 +56,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
             newUser.setPassword(new BCryptPasswordEncoder().encode(password));
             newUser.setEmail(email);
             newUser.setRoles(Set.of(userRole));
+            newUser.setGithubAccessToken(accessToken);
             userRepository.save(newUser);
+
             System.out.println("New GitHub user created: " + username);
         }
 

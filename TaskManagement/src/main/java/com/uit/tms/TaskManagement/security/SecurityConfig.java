@@ -1,5 +1,8 @@
 package com.uit.tms.TaskManagement.security;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,9 +14,13 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestResolver;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -21,6 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import com.uit.tms.TaskManagement.constants.Endpoint;
 import com.uit.tms.TaskManagement.constants.Keywords;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
@@ -34,6 +42,8 @@ public class SecurityConfig {
     private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
     @Autowired
     private final CustomOAuth2UserService customOAuth2UserService;
+    @Autowired
+    private ClientRegistrationRepository clientRegistrationRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -61,6 +71,8 @@ public class SecurityConfig {
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
                 .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(authorization -> authorization
+                                .authorizationRequestResolver(customAuthorizationRequestResolver()))
                         .loginPage(Endpoint.LOGIN)
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(customOAuth2UserService))
@@ -84,5 +96,42 @@ public class SecurityConfig {
     @Bean
     public OAuth2UserService<OAuth2UserRequest, OAuth2User> oAuth2UserService() {
         return new DefaultOAuth2UserService();
+    }
+
+    // Custom OAuth2AuthorizationRequestResolver to add additional parameters
+    // To let Github show the authorization page anytime user login with Github (linked to
+    // the same account)
+    private OAuth2AuthorizationRequestResolver customAuthorizationRequestResolver() {
+        DefaultOAuth2AuthorizationRequestResolver defaultResolver = new DefaultOAuth2AuthorizationRequestResolver(
+                clientRegistrationRepository, "/oauth2/authorization");
+
+        return new OAuth2AuthorizationRequestResolver() {
+            @Override
+            public OAuth2AuthorizationRequest resolve(HttpServletRequest request) {
+                OAuth2AuthorizationRequest authorizationRequest = defaultResolver.resolve(request);
+                return customizeAuthorizationRequest(authorizationRequest);
+            }
+
+            @Override
+            public OAuth2AuthorizationRequest resolve(HttpServletRequest request, String clientRegistrationId) {
+                OAuth2AuthorizationRequest authorizationRequest = defaultResolver.resolve(request,
+                        clientRegistrationId);
+                return customizeAuthorizationRequest(authorizationRequest);
+            }
+
+            private OAuth2AuthorizationRequest customizeAuthorizationRequest(
+                    OAuth2AuthorizationRequest authorizationRequest) {
+                if (authorizationRequest == null)
+                    return null;
+
+                Map<String, Object> additionalParameters = new HashMap<>(
+                        authorizationRequest.getAdditionalParameters());
+                additionalParameters.put("prompt", "consent");
+
+                return OAuth2AuthorizationRequest.from(authorizationRequest)
+                        .additionalParameters(additionalParameters)
+                        .build();
+            }
+        };
     }
 }

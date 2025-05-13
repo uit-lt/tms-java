@@ -29,7 +29,7 @@ import com.uit.tms.TaskManagement.constants.TemplateName;
 
 @Controller
 public class HomeController {
-        private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
+        private static final Logger logger = LoggerFactory.getLogger(HomeController.class);        
 
         @GetMapping(Endpoint.HOME)
         public String home(Model model, Authentication authentication) {

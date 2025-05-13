@@ -21,7 +21,7 @@ spring:
           github:
             client-id: ${GITHUB_CLIENT_ID}
             client-secret: ${GITHUB_CLIENT_SECRET}
-            scope: repo, read:user
+            scope: repo, read:user, admin:repo_hook
             redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
             authorization-grant-type: authorization_code
             client-name: GitHub
