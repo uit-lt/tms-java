@@ -6,7 +6,7 @@ server {
     root /app;
     index index.php index.html index.htm;
 
-    set $upstream_boot ${APP_HOST}:${SPRING_LOCAL_HOST_PORT};
+    set $upstream_boot spring_app:8080;
 
     access_log /var/log/nginx/tms.uit.local-access.log;
     error_log /var/log/nginx/tms.uit.local-error.log debug;
