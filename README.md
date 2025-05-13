@@ -21,6 +21,7 @@ Task Management System built with **Spring Boot** and **MySQL**, containerized u
 2. Create environment file
    ```bash
    cp .env.example .env
+   ./scripts/generate-nginx-config.sh
    ```
 
 3. Build and start the services

@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -56,5 +57,9 @@ public class UserEntity {
 	  inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
 	)
 	private Set<RoleEntity> roles;
+
+	@Schema(description = "Platform type: 0 for TMS, 1 for GitHub, 2 for Jira")
+	@Builder.Default
+	private int platformType = 0;
 	
 }
