@@ -10,6 +10,7 @@ mvn-clean-compile:
 	cp -r target/generated-sources/openapi/src/main/java/com/uit/tms/TaskManagement/model src/main/java/com/uit/tms/TaskManagement
 	cp -r target/generated-sources/openapi/src/main/java/com/uit/tms/TaskManagement/api src/main/java/com/uit/tms/TaskManagement
 
+# Special command to run to generate model and api classes in main directory
 cp-openapi:
 	cp -r target/generated-sources/openapi/src/main/java/com/uit/tms/TaskManagement/model src/main/java/com/uit/tms/TaskManagement
 	cp -r target/generated-sources/openapi/src/main/java/com/uit/tms/TaskManagement/api src/main/java/com/uit/tms/TaskManagement
