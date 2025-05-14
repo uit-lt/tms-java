@@ -7,3 +7,7 @@ dc-down:
 
 mvn-clean-compile:
 	docker compose run --rm -w /app spring_app mvn clean compile
+
+cp-openapi:
+	cp -r target/generated-sources/openapi/src/main/java/com/uit/tms/TaskManagement/model src/main/java/com/uit/tms/TaskManagement
+	cp -r target/generated-sources/openapi/src/main/java/com/uit/tms/TaskManagement/api src/main/java/com/uit/tms/TaskManagement

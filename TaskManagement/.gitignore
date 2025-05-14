@@ -33,3 +33,7 @@ build/
 .vscode/
 *.log
 *.zip
+
+*DTO*
+src/main/java/com/uit/tms/TaskManagement/model/*Request*
+src/main/java/com/uit/tms/TaskManagement/api
