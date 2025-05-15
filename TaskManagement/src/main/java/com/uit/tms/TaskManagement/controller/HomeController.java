@@ -1,6 +1,5 @@
 package com.uit.tms.TaskManagement.controller;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -222,83 +221,5 @@ public class HomeController {
         @GetMapping("/reset-password")
         public String resetPassword() {
                 return "auths/reset";
-        }
-
-        @GetMapping("/projects")
-        public String projectList(Model model) {
-                // Sample project data
-                List<Project> projects = Arrays.asList(
-                                new Project(1L, "Website Redesign"),
-                                new Project(2L, "API Development"),
-                                new Project(3L, "Mobile App Development"));
-
-                model.addAttribute("projects", projects);
-                return "projects/list";
-        }
-
-        @GetMapping("/projects/new")
-        public String newProjectForm(Model model) {
-                return "projects/form";
-        }
-
-        @GetMapping("/projects/{id}")
-        public String projectDetail(@PathVariable Long id, Model model) {
-                // Sample project with details (in a real app, this would come from a service)
-                Project project = new Project(
-                                id,
-                                "Project " + id,
-                                "This is a detailed description of the project. It includes information about the objectives, scope, and expected outcomes.",
-                                LocalDate.now().minusDays(10),
-                                LocalDate.now().plusDays(80),
-                                Priority.MEDIUM,
-                                "In Progress");
-
-                project.setId(id);
-
-                // Sample tasks associated with this project
-                List<Task> projectTasks = Arrays.asList(
-                                new Task(1L, "Design UI mockups", "Create wireframes for all pages",
-                                                TaskStatus.COMPLETED, Priority.HIGH, LocalDateTime.now().minusDays(5)),
-                                new Task(2L, "Setup database", "Configure and initialize database schema",
-                                                TaskStatus.IN_PROGRESS, Priority.MEDIUM,
-                                                LocalDateTime.now().plusDays(2)),
-                                new Task(3L, "Implement authentication", "Add login and registration functionality",
-                                                TaskStatus.TO_DO, Priority.HIGH, LocalDateTime.now().plusDays(10)));
-
-                // Add some team members
-                List<String> teamMembers = Arrays.asList("John Doe", "Jane Smith", "Alice Johnson");
-
-                // Calculate progress percentage based on completed tasks
-                int completedTasks = (int) projectTasks.stream()
-                                .filter(task -> task.getStatus() == TaskStatus.COMPLETED)
-                                .count();
-                int progressPercentage = projectTasks.isEmpty() ? 0 : (completedTasks * 100 / projectTasks.size());
-
-                // Recent activities related to this project
-                List<String> activities = Arrays.asList(
-                                "Task 'Design UI mockups' completed by John Doe",
-                                "Task 'Setup database' started by Jane Smith",
-                                "New task 'Implement authentication' added to project");
-
-                model.addAttribute("project", project);
-                model.addAttribute("tasks", projectTasks);
-                model.addAttribute("teamMembers", teamMembers);
-                model.addAttribute("progressPercentage", progressPercentage);
-                model.addAttribute("activities", activities);
-
-                return "projects/detail";
-        }
-
-        @GetMapping("/projects/{id}/edit")
-        public String editProjectForm(@PathVariable Long id, Model model) {
-                // Mock data for editing a project
-                Project project = new Project(id, "Mock Project Name", "Mock Project Description",
-                                LocalDate.now(), LocalDate.now().plusDays(30), Priority.MEDIUM, "In Progress");
-                project.setId(id);
-                project.setName("Project " + id);
-                System.out.println("Project: " + project);
-                logger.info("Project: {}", project);
-                model.addAttribute("project", project);
-                return "projects/form";
         }
 }
