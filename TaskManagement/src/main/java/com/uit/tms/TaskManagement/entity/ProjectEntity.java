@@ -2,6 +2,7 @@ package com.uit.tms.TaskManagement.entity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.uit.tms.TaskManagement.model.Priority;
 import org.springframework.data.annotation.CreatedBy;
@@ -41,10 +42,6 @@ public class ProjectEntity {
 
     private String status;
 
-    private int tasksTotal;
-
-    private int tasksDone;
-
     @ManyToOne
     @JoinColumn(name = "created_by", updatable = false)
     @CreatedBy
@@ -57,9 +54,11 @@ public class ProjectEntity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    @Transient
-    public int getProgressPercent() {
-        if (tasksTotal == 0) return 0;
-        return (int) ((double) tasksDone / tasksTotal * 100);
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+    @OneToMany
+    @JoinColumn(name = "projectId", referencedColumnName = "id", insertable = false, updatable = false)
+    private List<TaskEntity> tasks;
 }
